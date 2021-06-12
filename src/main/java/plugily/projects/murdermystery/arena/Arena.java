@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.golde.bukkit.corpsereborn.CorpseAPI.CorpseAPI;
 import org.jetbrains.annotations.NotNull;
@@ -513,11 +514,21 @@ public class Arena extends BukkitRunnable {
           cleanUpArena();
           if(plugin.getConfigPreferences().getOption(ConfigPreferences.Option.BUNGEE_ENABLED)
               && ConfigUtils.getConfig(plugin, "bungee").getBoolean("Shutdown-When-Game-Ends")) {
-            plugin.getServer().shutdown();
+            Bukkit.getScheduler ().scheduleSyncRepeatingTask (plugin, (Runnable)() -> {
+              if (Bukkit.getOnlinePlayers ().isEmpty ()) {
+                Bukkit.shutdown ();
+              }
+            }, 5, 5);
+            
+            setArenaState (ArenaState.SHUTTING_DOWN);
+          } else {
+            setArenaState (ArenaState.RESTARTING);
           }
-          setArenaState(ArenaState.RESTARTING);
         }
         setTimer(getTimer() - 1);
+        break;
+      case SHUTTING_DOWN:
+        // nothing to do here but i'll put it in the switch just in case
         break;
       case RESTARTING:
         players.clear();

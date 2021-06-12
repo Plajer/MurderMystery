@@ -135,7 +135,7 @@ public class ArenaManager {
           PermissionsManager.getJoinPerm().replace("<arena>", arena.getId())));
       return;
     }
-    if(arena.getArenaState() == ArenaState.RESTARTING) {
+    if(arena.getArenaState() == ArenaState.RESTARTING || arena.getArenaState() == ArenaState.SHUTTING_DOWN) {
       return;
     }
     if(arena.getArenaState() == ArenaState.STARTING && arena.getPlayers().size() >= arena.getMaximumPlayers()) {
